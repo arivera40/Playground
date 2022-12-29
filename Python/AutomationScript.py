@@ -33,9 +33,9 @@ content += ('<br><br>End of Message')
 # Provide details to compose mail.
 SERVER = 'smtp.gmail.com'
 PORT = 587
-FROM = 'rivera.andy40@gmail.com'
-TO = 'rivera.andy40@gmail.com'
-PASS = 'Ariv31574567!'
+FROM = 'ttest@gmail.com'
+TO = 'ttest0@gmail.com'
+PASS = '*******!'
 
 # Object used to form mail.
 msg = MIMEMultipart()

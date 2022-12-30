@@ -8,6 +8,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import datetime # System Date and Time
 
+import re
+import base64
+
 now = datetime.datetime.now()
 
 # email content placeholder
@@ -25,17 +28,26 @@ def extract_news(url):
         cnt += ((str(i + 1) + ' :: ' + tag.text + "\n" + '<br>') if tag.text != 'More' else '')
     return(cnt)
 
+# Decode message that is received through DebuggingServer.
+def decode_base64(content):
+    content = re.sub("b'|'", "", content)
+    print(base64.b64decode(content))
+
 cnt = extract_news('https://news.ycombinator.com/')
 content += cnt
 content += ('<br>------</br>')
 content += ('<br><br>End of Message')
 
-# Provide details to compose mail.
-SERVER = 'smtp.gmail.com'
-PORT = 587
-FROM = 'ttest@gmail.com'
-TO = 'ttest0@gmail.com'
-PASS = '*******!'
+html_file = open("includes/output.html", "w")
+html_file.write(content)
+html_file.close()
+
+# Set server settings & details to compose mail.
+SERVER = 'localhost'
+PORT = 8025
+FROM = 'ttestandyriv@gmail.com'
+TO = 'ttestandyriv@gmail.com'
+PASS = 'ttestpassword'
 
 # Object used to form mail.
 msg = MIMEMultipart()
@@ -50,14 +62,16 @@ msg.attach(MIMEText(content, 'html'))
 print('Initiating Server...')
 
 # Email settings.
-server = smtplib.SMTP(SERVER, PORT)
-server.set_debuglevel(1)
-server.ehlo()
-server.starttls()
-server.login(FROM, PASS)
-server.sendmail(FROM, TO, msg.as_string())
-
-print('Email Sent...')
-
-server.quit()
+try:
+    server = smtplib.SMTP(SERVER, PORT) # Server and Port # to access
+    server.set_debuglevel(0)    # Debug options
+    server.ehlo()   # Optional: can be omitted
+    # server.starttls() # Secure the connection
+    # server.login(FROM, PASS)  # Login to email
+    server.sendmail(FROM, TO, msg.as_string())  # Send mail to recipient
+    print('Email Sent...')
+except Exception as e:
+    print(e)    # Print any error messages to stdout
+finally:
+    server.quit()   # Quit server whether on success or fail
 
